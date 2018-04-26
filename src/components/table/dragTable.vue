@@ -1,5 +1,21 @@
 <template>
-    <div class="content-wrapper">
+    <div class="content-wrapper dragletable">
+        <div class="filter-container">
+            <el-input placeholder="标题" style="width:200px;"></el-input>
+            <el-select style="width:90px;" placeholder="重要性" v-model="value1">
+                <el-option v-for="item in selectOption" :value="item" :label="item" :key="item"></el-option>
+            </el-select>
+            <el-select style="width:100px;" placeholder="类型" v-model="value2">
+                <el-option v-for="item in selectType" :value="item.val" :label="item.val" :key="key"></el-option>
+            </el-select>
+            <el-select style="width:120px;" placeholder="排序" v-model="value3">
+                <el-option v-for="item in sortOptions" :value="item.key" :label="item.label" :key="key"></el-option>
+            </el-select>
+            <el-button icon="search" type="primary">搜索</el-button>
+            <el-button icon="edit" type="primary" @click="creattable">添加</el-button>
+            <el-button icon="download" type="primary" size="medium">导出</el-button>
+            <el-checkbox>显示审核人</el-checkbox>
+        </div>
         <el-table :data='list' border fit highlight-current-row style="width: 100%" stripe v-loading.body="listLoading">
             <el-table-column label="序号" align="center">
                 <template slot-scope="scope">
@@ -68,17 +84,51 @@
                 @current-change="handleCurrentChange"
                 :current-page="1"
                 :page-sizes="[5, 10, 15, 20]"
-                :page-size=5
+                :page-size="listquery.pagesize"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="11">
             </el-pagination>
         </div>
+        <el-dialog :title="titlemap[titlekey]" :visible.sync="dialogformvisible">
+            <el-form ref="form" :model="form" label-width="100px">
+                <el-form-item label="活动名称">
+                    <el-select v-model="form.activename" placeholder="请选择" style="width:200px;"></el-select>
+                </el-form-item>
+                <el-form-item label="时间">
+                    <el-date-picker v-model="form.timestamp" type="datetime" placeholder="选择日期时间"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="标题">
+                    <el-input v-model="form.title" style="width:200px;"></el-input>
+                </el-form-item>
+                <el-form-item label="状态">
+                    <el-select style="width:200px;" placeholder="请选择" v-model="form.status">
+                        <el-option v-for="(item,key) in statusOptions" :key="key" :label="item" :value="item" ></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="重要性">
+                    <el-rate v-model="form.importent" :max="3" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" style="margin-top:8px;">
+                    
+                    </el-rate>
+                </el-form-item>
+                <el-form-item label="点评">
+                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="form.remark" style="width:300px;">
+                    </el-input>
+                </el-form-item>
+            </el-form>
+            <div sloa="footer" class="form-footer">
+                <el-button @click="dialogformvisible = false">取 消</el-button>
+                <el-button v-if="titlekey=='create'" type="primary" @click="createData">确 定</el-button>
+                <el-button v-else type="primary" @click="updateData">确 定</el-button>
+            </div>
+        </el-dialog>
 </div>
         
 </template>
 
 <script>
 // import Icon from 'vue-svg-icon';
+
+
 const list=[
     {
         auditor:"薛强",
@@ -246,16 +296,61 @@ const list=[
         type:"JP"
     }
 ]
+    
 import Sortable from 'sortablejs'
 export default{
     data(){
         return{
             list:list,
-            listLoading:true
+            value1:"",
+            value2:"",
+            value3:"",
+            sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
+            listLoading:true,
+            selectOption:[1,2,3],
+            selectType:
+            [
+                {
+                    val:"日本(JP)",
+                    key:1
+                },
+                {
+                    val:"美国(US)",
+                    key:2
+                },
+                {
+                    val:"欧洲(JP)",
+                    key:3
+                },
+                {
+                    val:"中国(CN)",
+                    key:4
+                }
+            ],
+            listquery:{
+                pagesize:5
+            },
+            dialogformvisible:false,
+            titlemap:{
+                creat:'创建',
+                update:'更新'
+            },
+            titlekey:'',
+            form:{
+                activename:'',
+                timestamp:new Date(),
+                title:'',
+                status:'publish',
+                importent:1,
+                remark:''
+            },
+            statusOptions: ['published', 'draft', 'deleted'],
+
         }
     },
     created() {
         this.getList()
+        
     },
     filters:{
         statusFilter(status){
@@ -276,11 +371,17 @@ export default{
       }
     },
     methods:{
+        creatData(){
+
+        },
+        updateData(){
+
+        },
         handleCurrentChange(){
-            alett("currentchage")
+            
         }
-        ,handleSizeChange(){
-            alert("sizechange")
+        ,handleSizeChange(val){
+            this.listquery.pagesize = val;
         }
       ,getList(){
           this.listLoading = true;
@@ -306,11 +407,16 @@ export default{
               message:"编辑成功！",
               type:"success"
           })
+      },
+      creattable(){
+          this.dialogformvisible = true;
+          this.titlekey = 'creat'
       }  
     }
 }
 </script>
 <style>
+   
     .cancel-btn{
        float:right;
        
@@ -318,5 +424,11 @@ export default{
     #edit-input{
         float:left;
         width:80%;
+    }
+    .filter-container{
+        padding:20px 0;
+    }
+    .dragletable{
+        padding:20px;
     }
 </style>
