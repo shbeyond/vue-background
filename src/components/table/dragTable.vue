@@ -53,7 +53,7 @@
                     {{scope.row.type | showType}}
                 </template>
             </el-table-column>
-            <el-table-column label="标题" width="500">
+            <el-table-column label="标题" width="400">
                 <template slot-scope="scope">
                     <template v-if="scope.row.edit" style="overflow:hidden;">
                         <el-input v-model="scope.row.title" id="edit-input"></el-input>
@@ -71,9 +71,10 @@
                     <el-button v-else type="primary" size="medium"  icon="edit" @click='scope.row.edit=!scope.row.edit'>编辑</el-button>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="拖拽">
-                <template slot-scope="scope" >
-                    <span class='el-icon-rank' size="medium" style="cursor:pointer;"></span>
+            <el-table-column align="center" label="操作" width="150">
+                <template slot-scope="scope">
+                    <el-button size="mini" type="primary" icon="edit" style="float:left;" @click="handleupdate(scope.row)">修改</el-button>
+                    <el-button size="mini" type="danger" icon="delete" style="float:right;" @click="delrow(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
 
@@ -90,23 +91,29 @@
             </el-pagination>
         </div>
         <el-dialog :title="titlemap[titlekey]" :visible.sync="dialogformvisible">
-            <el-form ref="form" :model="form" label-width="100px">
-                <el-form-item label="活动名称">
-                    <el-select v-model="form.activename" placeholder="请选择" style="width:200px;"></el-select>
+            <el-form ref="form" :model="form" label-width="100px" :rules="rule" status-icon>
+                <el-form-item label="类型" prop="type">
+                    <el-select v-model="form.type" placeholder="请选择" style="width:200px;">
+                        <el-option v-for="(item,index) in calendarTypeOptions" :key="key" :value='item.key' :label="item.display_name"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="时间">
+                <el-form-item label="时间" prop="time">
                     <el-date-picker v-model="form.timestamp" type="datetime" placeholder="选择日期时间"></el-date-picker>
                 </el-form-item>
-                <el-form-item label="标题">
+              
+                <el-form-item label="标题" prop="title">
                     <el-input v-model="form.title" style="width:200px;"></el-input>
                 </el-form-item>
-                <el-form-item label="状态">
+                <el-form-item label="阅读数" prop="readed">
+                    <el-input v-model="form.pageviews" style="width:200px;"></el-input>
+                </el-form-item>
+                <el-form-item label="状态" prop="status">
                     <el-select style="width:200px;" placeholder="请选择" v-model="form.status">
                         <el-option v-for="(item,key) in statusOptions" :key="key" :label="item" :value="item" ></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="重要性">
-                    <el-rate v-model="form.importent" :max="3" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" style="margin-top:8px;">
+                <el-form-item label="重要性" prop="import">
+                    <el-rate v-model="form.forecast" :max="3" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" style="margin-top:8px;">
                     
                     </el-rate>
                 </el-form-item>
@@ -296,8 +303,17 @@ const list=[
         type:"JP"
     }
 ]
-    
-import Sortable from 'sortablejs'
+const calendarTypeOptions = [
+  { key: 'CN', display_name: '中国' },
+  { key: 'US', display_name: '美国' },
+  { key: 'JP', display_name: '日本' },
+  { key: 'EU', display_name: '欧元区' }
+]
+const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {}) 
+
 export default{
     data(){
         return{
@@ -308,6 +324,7 @@ export default{
             sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
             listLoading:true,
             selectOption:[1,2,3],
+            calendarTypeOptions,
             selectType:
             [
                 {
@@ -337,14 +354,23 @@ export default{
             },
             titlekey:'',
             form:{
-                activename:'',
-                timestamp:new Date(),
+                type:'',
+                display_time:new Date().toLocaleString(),
                 title:'',
                 status:'publish',
-                importent:1,
-                remark:''
+                forecast:1,
+                pageviews:'',
+                remark:'',
+                edit:false
             },
             statusOptions: ['published', 'draft', 'deleted'],
+            rule:{
+                type:[{required:true,message:'this is required',trigger:'change'}],
+                // time:[{type:'date',required:true,message:'this is required',trigger:'change'}],
+                // time:[{type:'date',required:true,message:'time is required',trigger:'change'}],
+                title:[{required:true,message:'this is required',trigger:'blur'}],
+                status:[{required:true,message:'this is required',trigger:'change'}]
+            }
 
         }
     },
@@ -371,8 +397,42 @@ export default{
       }
     },
     methods:{
-        creatData(){
-
+        handleupdate(row){
+            this.form = Object.assign({},row);
+            this.display_time = new Date(this.form.display_time);
+            this.titlekey = "update";
+            this.dialogformvisible = true;
+    //         this.$nextTick(() => {
+    //         // this.$refs['form'].clearValidate()
+    //   })
+        },
+        delrow(row){
+            // console.log(row.id,Object.prototype.toString.call(row.id))
+            for(let i=0;i<this.list.length;i++){
+                // console.log(row.id+'*************',this.list[i].id)
+                if(this.list[i].id == row.id){
+                    console.log("fffff")
+                    this.list.splice(i,1)
+                }
+            }
+           console.log(this.list.length)
+        },
+        createData(){
+            this.$refs['form'].validate((valida)=>{
+                if(valida){
+                    this.form.id = parseInt(Math.random() * 100) + 1024 // mock a id
+                    this.form.author = '原创作者';
+                    console.log(this.list.length)
+                    this.list.unshift(this.form);
+                    this.dialogformvisible = false
+                    this.$notify({
+                        title: '成功',
+                        message: '创建成功',
+                        type: 'success',
+                        duration: 2000
+                    })
+                }
+            })
         },
         updateData(){
 
@@ -410,7 +470,7 @@ export default{
       },
       creattable(){
           this.dialogformvisible = true;
-          this.titlekey = 'creat'
+          this.titlekey = 'create'
       }  
     }
 }
