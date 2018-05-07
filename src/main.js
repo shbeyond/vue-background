@@ -18,6 +18,8 @@ require("./plugins/slimScroll/jquery.slimscroll.min.js")
 require("./dist/js/demo.js")
 require("./dist/js/app.min.js")
 require("./dist/js/axios.js")
+// require("./components/mock/index.js")
+import './components/mock/index.js'//全局引用封装的mock.js
 
 require('!style!css!element-ui/lib/theme-default/index.css')
 
