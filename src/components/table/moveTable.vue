@@ -10,7 +10,7 @@
         <div>
             <el-table :data="tableData" :key='key' border fit highlight-current-row stripe style="width: 100%">
                 <el-table-column prop='name' label='名称' width='180'></el-table-column>
-                <el-table-column :key='fruit' v-for="(fruit,index) in formThead" :label='fruit' >
+                <el-table-column :key='index' v-for="(fruit,index) in formThead" :label='fruit' >
                     <template slot-scope="scope">
                         {{scope.row[fruit]}}
                     </template>

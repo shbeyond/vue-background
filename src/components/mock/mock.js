@@ -17,6 +17,10 @@ for (let i = 0; i < count; i++) {
         pageviews: '@integer(300, 5000)'//<阅读数>Random.integer( min, max )返回一个随机的整数。
     }))
 }
+  const newList = List.map(v=>{
+        v.originTitle = v.title;
+        return v;
+    })
     function param2Obj(url){
 
         const search = url.split('?')[1]
@@ -25,14 +29,13 @@ for (let i = 0; i < count; i++) {
         }
         return JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
     }
-    
+
 export default{
     getList: config=>{
-
         const { importance, type, title, page = 1, limit = 20, sort } = param2Obj(config.url)
 
         
-        let mockList = List.filter(item => {
+        let mockList = newList.filter(item => {//筛选符合条件的数据，重新返回数组
             if (importance && item.importance !== +importance) return false
             if (type && item.type !== type) return false
             if (title && item.title.indexOf(title) < 0) return false

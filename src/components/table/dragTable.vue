@@ -1,23 +1,24 @@
 <template>
     <div class="content-wrapper dragletable">
         <div class="filter-container">
-            <el-input placeholder="标题" style="width:200px;"></el-input>
-            <el-select style="width:90px;" placeholder="重要性" v-model="value1" @change = "impChange">
+            <el-input placeholder="标题" style="width:200px;" v-model="searchVal"></el-input>
+            <el-select style="width:90px;" placeholder="重要性" v-model="listquery.importance" @change = "impChange">
                 <el-option v-for="item in selectOption" :value="item" :label="item" :key="item"></el-option>
             </el-select>
-            <el-select style="width:100px;" placeholder="类型" v-model="value2" @change = "typeChange">
+            <el-select style="width:100px;" placeholder="国籍" v-model="listquery.type" @change = "typeChange">
                 <el-option v-for="item in selectType" :value="item.realVal" :label="item.val" :key="key"></el-option>
             </el-select>
-            <el-select style="width:120px;" placeholder="排序" v-model="value3" @change = "handleFilter">
+            <el-select style="width:120px;" placeholder="排序" v-model="listquery.sort" @change = "sortReverse">
                 <el-option v-for="item in sortOptions" :value="item.key" :label="item.label" :key="key"></el-option>
             </el-select>
-            <el-button icon="search" type="primary">搜索</el-button>
+            <el-button icon="search" type="primary" @click="handleFilter">搜索</el-button>
             <el-button icon="edit" type="primary" @click="creattable">添加</el-button>
             <el-button icon="download" type="primary" size="medium">导出</el-button>
-            <el-checkbox>显示审核人</el-checkbox>
+            <el-button icon="refresh" type="primary" size="medium" @click="refreshData">刷新</el-button>
+            <el-checkbox v-model="checkperson" @change="tabelkey=tabelkey+1">显示审核人</el-checkbox>
         </div>
         <el-table :data='list' border fit highlight-current-row style="width: 100%" stripe v-loading.body="listLoading">
-            <el-table-column label="序号" align="center">
+            <el-table-column label="序号" align="center" width="80">
                 <template slot-scope="scope">
                     {{scope.row.id}}
                 </template>
@@ -28,17 +29,17 @@
                 </template>
             </el-table-column>
           
-            <el-table-column label="作者" align="center">
+            <el-table-column label="作者" align="center" width="100">
                 <template slot-scope="scope">
                     {{scope.row.author}}
                 </template>
             </el-table-column>
-            <el-table-column label="重要性" align="center">
+            <el-table-column label="重要性" align="center" width="80">
                 <template slot-scope="scope">
                     {{scope.row.importance}}
                 </template>
             </el-table-column>
-            <el-table-column label="阅读数" align="center">
+            <el-table-column label="阅读数" align="center" width="100">
                 <template slot-scope="scope">
                     {{scope.row.pageviews}}
                 </template>
@@ -48,12 +49,12 @@
                     <el-tag :type="scope.row.status | statusFilter" :size="medium">{{scope.row.status}}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="国籍">
+            <el-table-column align="center" label="国籍" width="100">
                 <template slot-scope="scope">
                     {{scope.row.type | showType}}
                 </template>
             </el-table-column>
-            <el-table-column label="标题" width="500">
+            <el-table-column label="标题" width="300">
                 <template slot-scope="scope">
                     <template v-if="scope.row.edit" style="overflow:hidden;">
                         <el-input v-model="scope.row.title" id="edit-input"></el-input>
@@ -62,13 +63,16 @@
                     </template>
                     <span v-else>{{scope.row.title}}</span>
                 </template>
-                   
-                
+            </el-table-column>
+            <el-table-column v-if="checkperson" label="审核人" align="center">
+                <template slot-scope="scope">
+                <span style='color:red;'>{{scope.row.auditor}}</span>
+                </template>
             </el-table-column>
             <el-table-column align="center" label="修改">
                 <template slot-scope="scope">
                     <el-button v-if="scope.row.edit" type="success" size="medium"  icon="circle-check-outline" @click="confirmEdit(scope.row)">完成</el-button>
-                    <el-button v-else type="primary" size="medium"  icon="edit" @click='scope.row.edit=!scope.row.edit'>修改</el-button>
+                    <el-button v-else type="primary" size="medium"  icon="edit" @click='scope.row.edit=!scope.row.edit'>修改标题</el-button>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="操作" width="150">
@@ -93,7 +97,7 @@
         </div>
         <el-dialog :title="titlemap[titlekey]" :visible.sync="dialogformvisible">
             <el-form ref="form" :model="form" label-width="100px" :rules="rule" status-icon>
-                <el-form-item label="类型" prop="type">
+                <el-form-item label="国籍" prop="type">
                     <el-select v-model="form.type" placeholder="请选择" style="width:200px;">
                         <el-option v-for="(item,index) in calendarTypeOptions" :key="key" :value='item.key' :label="item.display_name"></el-option>
                     </el-select>
@@ -105,9 +109,11 @@
                 <el-form-item label="标题" prop="title">
                     <el-input v-model="form.title" style="width:200px;"></el-input>
                 </el-form-item>
-                <el-form-item label="阅读数" prop="readed">
-                    <el-input v-model="form.pageviews" style="width:200px;"></el-input>
-                </el-form-item>
+                <!--
+                    <el-form-item label="阅读数" prop="readed">
+                        <el-input v-model="form.pageviews" style="width:200px;"></el-input>
+                    </el-form-item>
+                -->
                 <el-form-item label="状态" prop="status">
                     <el-select style="width:200px;" placeholder="请选择" v-model="form.status">
                         <el-option v-for="(item,key) in statusOptions" :key="key" :label="item" :value="item" ></el-option>
@@ -153,11 +159,11 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {//整理�
 export default{
     data(){
         return{
+            tabelkey:0,
+            checkperson:false,
             list:[],
+            searchVal:"",
             total:null,
-            value1:"",
-            value2:"",
-            value3:"",
             sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
             listLoading:true,
             selectOption:[1,2,3],
@@ -238,10 +244,28 @@ export default{
       }
     },
     methods:{
-        handleFilter(val){
-            
+        sortReverse(val){
             this.listquery.sort = val;
             this.getList();
+        },
+        refreshData(){
+               this.listquery = {
+                page: 1,
+                limit: 10,
+                importance: undefined,
+                title: undefined,
+                type: undefined,
+                sort: '+id'
+            };
+            this.searchVal = undefined;
+            this.getList();
+        },
+        handleFilter(){
+            if(this.searchVal){
+                this.listquery.title = this.searchVal.trim();
+                this.getList(); 
+            }
+           
         },
         typeChange(val){
             this.listquery.type = val;
@@ -274,7 +298,7 @@ export default{
                 if(valida){
                     this.form.id = parseInt(Math.random() * 100) + 1024 // mock a id
                     this.form.author = '原创作者';
-                    console.log(this.list.length)
+                    
                     this.list.unshift(this.form);
                     this.dialogformvisible = false
                     this.$notify({
@@ -298,6 +322,7 @@ export default{
                             break;
                         }
                     }
+                    this.dialogformvisible = false
                 }
             })
         },
@@ -325,14 +350,14 @@ export default{
       },
       cancel(row){
           row.edit = false;
-          row.title = row.origintitle
+          row.title = row.originTitle
           this.$message({
               message:"您已取消编辑！",
               type:"warning"
           });
       },
       confirmEdit(row){
-          row.origintitle = row.title;//此处代码只是为了保证 origintitle === title
+          row.originTitle = row.title;//此处代码只是为了保证 origintitle === title
           row.edit = false;
           this.$message({
               message:"编辑成功！",
@@ -340,6 +365,17 @@ export default{
           })
       },
       creattable(){
+
+           this.form={
+                type:undefined,
+                display_time:new Date().toLocaleString(),
+                title:'',
+                status:'publish',
+                forecast:1,
+                pageviews:'',
+                remark:'',
+                edit:false
+          }
           this.dialogformvisible = true;
           this.titlekey = 'create'
       }  
