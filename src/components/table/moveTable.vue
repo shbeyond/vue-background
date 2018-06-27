@@ -17,10 +17,14 @@
                 </el-table-column>
             </el-table>
         </div>
+    
 	</div>
 </template>
 
 <script>
+    
+    // import childList from '../mock/mock.js'
+    // console.log(childList)
     const checkboxDefault = ['apple','banane'];
     export default{
 
@@ -58,6 +62,7 @@
                 this.formThead = this.formTheadOptions.filter(i => valArr.indexOf(i) >= 0)
                 this.key = this.key + 1// 为了保证table 每次都会重渲 （牺牲性能保证效果，当然也可以不用）
                 }
-            }
+        },
+       
     }
 </script>

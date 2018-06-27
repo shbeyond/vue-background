@@ -40,7 +40,8 @@
         return data
       }())
         myChart.setOption({
-                      backgroundColor: '#344b58',
+          
+        backgroundColor: '#344b58',
         title: {
           text: '统计',
           x: '4%',

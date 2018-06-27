@@ -3,142 +3,27 @@
   <div class="wrapper">
     <header class="main-header">
       <!-- Logo -->
-      <a href="index2.html" class="logo">
-        <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini">A</span>
-        <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>Admin</b>Lte</span>
+      <a href="#" class="logo">
+        AdminLTE
       </a>
       
       <!-- Header Navbar: style can be found in header.less -->
       <nav class="navbar navbar-static-top">
         <!-- Sidebar toggle button-->
         <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-          <span class="sr-only">Toggle navigation</span>
+          <span class="sr-only"></span>
         </a>
-        <!-- Navbar Right Menu -->
-        <div class="navbar-custom-menu">
-          <ul class="nav navbar-nav">
-            <li>
-              <a href="#">
-                <span class="hidden-xs">您当前拥有0积分</span>
-              </a>
-            </li>
-            <!-- Messages: style can be found in dropdown.less-->
-            <!-- Notifications: style can be found in dropdown.less -->
-            <li class="dropdown notifications-menu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-bell-o"></i>
-                <span class="label label-warning">10</span>
-              </a>
-              <ul class="dropdown-menu">
-                <li class="header text-center">您有10条待办事项需要处理</li>
-                <li>
-                  <!-- inner menu: contains the actual data -->
-                  <ul class="menu">
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
-                        page and may cause design problems
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-users text-red"></i> 5 new members joined
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-shopping-cart text-green"></i> 25 sales made
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-user text-red"></i> You changed your username
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="footer"><a href="#">查看全部</a></li>
-              </ul>
-            </li>
-            <!-- Tasks: style can be found in dropdown.less -->
-            <!-- User Account: style can be found in dropdown.less -->
-            <li class="dropdown user user-menu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <img src="./dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                <span class="hidden-xs">张三</span>
-              </a>
-              <ul class="dropdown-menu">
-                <!-- User image -->
-                <li class="user-header">
-                  <img src="./dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-
-                  <p>
-                    	张三 - 前端开发者
-                    <small>注册日期：2016年9月14日</small>
-                  </p>
-                </li>
-                <!-- Menu Body -->
-                <!-- <li class="user-body"> -->
-                  <!-- <div class="row"> -->
-                    <!-- <div class="col-xs-4 text-center">
-                      <a href="#">Followers</a>
-                    </div>
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Sales</a>
-                    </div>
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Friends</a>
-                    </div> -->
-                    <!-- <div class="col-xs-12 text-center">
-                      可用调休时长：10小时
-                    </div> -->
-                  <!-- </div> -->
-                  <!-- &lt;!&ndash; /.row &ndash;&gt; -->
-                <!-- </li> -->
-                <!-- Menu Footer-->
-                <li class="user-footer">
-                  <div class="pull-left">
-                    <a href="#" class="btn btn-default btn-flat">个人资料</a>
-                  </div>
-                  <div class="pull-right">
-                    <a href="#" class="btn btn-default btn-flat">退出登录</a>
-                  </div>
-                </li>
-              </ul>
-            </li>
-            <!-- Control Sidebar Toggle Button -->
-            <!-- <li>
-              <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-            </li> -->
-          </ul>
-        </div>
+        <a href="http://panjiachen.github.io/vue-element-admin/#/dashboard">
+          <el-button type="primary" size="small" class="pull-right" icon="search"></el-button>
+        </a>
+        
         
       </nav>
     </header>
-    <!-- Left side column. contains the logo and sidebar -->
     <aside class="main-sidebar">
-      <!-- sidebar: style can be found in sidebar.less -->
       <section class="sidebar">
-        <!-- Sidebar user panel -->
-        <div class="user-panel">
-          <div class="pull-left image">
-            <img src="./dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-          </div>
-          <div class="pull-left info">
-            <p>张三</p>
-            <a href="#"><i class="fa fa-circle text-success"></i>在线</a>
-          </div>
-        </div>
-   
         <ul class="sidebar-menu">
-          <li class="header">MAIN NAVIGATION</li>
+          
           <li class="active">
             <router-link :to="{ path:'/' }">
               <i class="glyphicon glyphicon-home"></i> 
@@ -151,49 +36,14 @@
             
             
             <ul class="treeview-menu">
-            	<li><router-link to="letter"><i class="fa fa-circle-o"></i>站内信</router-link></li>
-              <li><router-link to="productWant"><i class="fa fa-circle-o"></i>意向进件列表</router-link></li>
+            	<li><router-link to="letter"><i class="fa fa-circle-o"></i>选中删除</router-link></li>
+             
               <li><router-link to="sh_dialog"><i class="fa fa-circle-o"></i>E-chart表格</router-link></li>
             </ul>
-            <!--<ul class="treeview-menu">-->
-              <!--<li><a href="index.html"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>-->
-              <!--<li class="active"><a href="index2.html"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>-->
-            <!--</ul>-->
+
           </li>
         
-          <li class="treeview">
-            <a href="#">
-              <i class="fa fa-files-o"></i>
-              <span>考勤管理</span>
-              <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-                <!-- <small class="label pull-right bg-green">new</small> -->
-              </span>
-            </a>
-            <ul class="treeview-menu">
-              <li><router-link to="attendance"><i class="fa fa-circle-o"></i>我的考勤记录</router-link></li>
-              <li><router-link to="leave_record"><i class="fa fa-circle-o"></i>调休使用记录</router-link></li>
-              <li><router-link to="bottom_money"><i class="fa fa-circle-o"></i>底层资产</router-link></li>
-            
-            </ul>
-          </li>
-          <li class="treeview">
-            <a href="#">
-              <i class="fa fa-th"></i> <span>加班管理</span>
-              <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-                <!-- <small class="label pull-right bg-green">new</small> -->
-              </span>
-            </a>
-            <ul class="treeview-menu">
-              <li><router-link to="overtime_record"><i class="fa fa-circle-o"></i> 加班记录</router-link></li>
-              <li><router-link to="overtime_petitioner"><i class="fa fa-circle-o"></i> 加班申请</router-link></li>
-              <li><router-link to="overtime_pass"><i class="fa fa-circle-o"></i> 加班审批</router-link></li>
-              <!--<li><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> Morris</a></li>-->
-              <!--<li><a href="pages/charts/flot.html"><i class="fa fa-circle-o"></i> Flot</a></li>-->
-              <!--<li><a href="pages/charts/inline.html"><i class="fa fa-circle-o"></i> Inline charts</a></li>-->
-            </ul>
-          </li>
+
           <li class="treeview">
             <a href="#">
               <i class="fa fa-pie-chart"></i> <span>TABLE表格</span>
@@ -203,20 +53,21 @@
               </span>
             </a>
             <ul class="treeview-menu">
-              <li><router-link to="import_data"><i class="fa fa-circle-o"></i> 导入数据</router-link></li>
-              <li><router-link to="table"><i class="fa fa-circle-o"></i> Table表格</router-link></li>
+              <li><router-link to="import_data"><i class="fa fa-circle-o"></i> 页面拖拽</router-link></li>
+             <!--<li><router-link to="table"><i class="fa fa-circle-o"></i> Table表格</router-link></li> -->
               <li><router-link to="cross_table"><i class="fa fa-circle-o"></i> 穿梭表格</router-link></li>
-              <li><router-link to="move_table"><i class="fa fa-circle-o"></i> 动态表格</router-link></li>
-              <li><router-link to="drag_table"><i class="fa fa-circle-o"></i> 拖拽表格</router-link></li>
+              <!-- <li><router-link to="move_table"><i class="fa fa-circle-o"></i> 动态表格</router-link></li>-->
+               <li><router-link to="productWant"><i class="fa fa-circle-o"></i>二级table</router-link></li>
+              <li><router-link to="drag_table"><i class="fa fa-circle-o"></i> 综合表格</router-link></li>
             </ul>
           </li>
           
-       <li class="treeview">
+      <!--  <li class="treeview">
             <a href="#">
               <i class="fa fa-pie-chart"></i> <span>贷后部</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
-                <!-- <small class="label pull-right bg-green">new</small> -->
+                <small class="label pull-right bg-green">new</small> 
               </span>
             </a>
             <ul class="treeview-menu">
@@ -224,7 +75,7 @@
               <li><router-link to="table"><i class="fa fa-circle-o"></i>展期进件列表</router-link></li>
             </ul>
           </li>
-          
+          -->
         </ul>
       </section>
       <!-- /.sidebar -->

@@ -1,9 +1,7 @@
 <template>
 	<div class="content-wrapper">
 		
-		<section class="content-header">
-			<h4>站内信</h4>
-		</section>
+	
 		<section class="content">
 		<el-table ref="multTable" :data="newdata" style="width:100%;" stripe @selection-change="selectChange">
 			

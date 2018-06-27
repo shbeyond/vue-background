@@ -13,11 +13,14 @@
             </el-select>
             <el-button icon="search" type="primary" @click="handleFilter">搜索</el-button>
             <el-button icon="edit" type="primary" @click="creattable">添加</el-button>
-            <el-button icon="download" type="primary" size="medium">导出</el-button>
             <el-button icon="refresh" type="primary" size="medium" @click="refreshData">刷新</el-button>
             <el-checkbox v-model="checkperson" @change="tabelkey=tabelkey+1">显示审核人</el-checkbox>
         </div>
-        <el-table :data='list' border fit highlight-current-row style="width: 100%" stripe v-loading.body="listLoading">
+        <el-table :data='list' border fit highlight-current-row style="width: 100%" stripe v-loading="listLoading"
+        element-loading-text="数据加载中..."
+        element-loading-background="black"
+        element-loading-spinner="el-icon-loading"
+        >
             <el-table-column label="序号" align="center" width="80">
                 <template slot-scope="scope">
                     {{scope.row.id}}
@@ -39,9 +42,26 @@
                     {{scope.row.importance}}
                 </template>
             </el-table-column>
-            <el-table-column label="阅读数" align="center" width="100">
+           <!--
+                <el-table-column label="阅读数" align="center" width="100">
                 <template slot-scope="scope">
                     {{scope.row.pageviews}}
+                </template>
+                </el-table-column>
+            -->
+            <el-table-column label="标题" width="600">
+                <template slot-scope="scope">
+                    <template v-if="scope.row.edit">
+                        <el-input v-model="scope.row.title" id="edit-input" style="width:60%;"></el-input>
+                        
+                    </template>
+                    <span v-else>{{scope.row.title}}</span>
+                    <span v-if="scope.row.edit">
+                        <el-button type="success" size="small"  icon="circle-check-outline" @click="confirmEdit(scope.row)" style="float:right;">完成</el-button>
+                        <el-button type="warning" icon="refresh" class="cancel-btn" @click="cancel(scope.row)" size="small" style="margin-right:10px;">取消</el-button>
+                    </span>
+                    <el-button v-else type="primary" size="small"  icon="edit" @click='scope.row.edit=!scope.row.edit'  style="float:right;">修改</el-button>
+                   
                 </template>
             </el-table-column>
             <el-table-column label="状态" align="center">
@@ -54,27 +74,13 @@
                     {{scope.row.type | showType}}
                 </template>
             </el-table-column>
-            <el-table-column label="标题" width="300">
-                <template slot-scope="scope">
-                    <template v-if="scope.row.edit" style="overflow:hidden;">
-                        <el-input v-model="scope.row.title" id="edit-input"></el-input>
-                        <el-button type="warning" icon="refresh" class="cancel-btn" @click="cancel(scope.row)" size="medium">取消</el-button>
-
-                    </template>
-                    <span v-else>{{scope.row.title}}</span>
-                </template>
-            </el-table-column>
+        
             <el-table-column v-if="checkperson" label="审核人" align="center">
                 <template slot-scope="scope">
                 <span style='color:red;'>{{scope.row.auditor}}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="修改">
-                <template slot-scope="scope">
-                    <el-button v-if="scope.row.edit" type="success" size="medium"  icon="circle-check-outline" @click="confirmEdit(scope.row)">完成</el-button>
-                    <el-button v-else type="primary" size="medium"  icon="edit" @click='scope.row.edit=!scope.row.edit'>修改标题</el-button>
-                </template>
-            </el-table-column>
+          
             <el-table-column align="center" label="操作" width="150">
                 <template slot-scope="scope">
                     <el-button size="mini" type="primary" icon="edit" style="float:left;" @click="handleupdate(scope.row)">编辑</el-button>
@@ -95,19 +101,19 @@
                 >
             </el-pagination>
         </div>
-        <el-dialog :title="titlemap[titlekey]" :visible.sync="dialogformvisible">
-            <el-form ref="form" :model="form" label-width="100px" :rules="rule" status-icon>
+        <el-dialog :title="titlemap[titlekey]" :visible.sync="dialogformvisible" class="dialogwidth">
+            <el-form ref="forms" :model="form" label-width="100px" :rules="rule" status-icon @submit.native.prevent>
                 <el-form-item label="国籍" prop="type">
-                    <el-select v-model="form.type" placeholder="请选择" style="width:200px;">
+                    <el-select v-model="form.type" placeholder="请选择" style="width:300px;">
                         <el-option v-for="(item,index) in calendarTypeOptions" :key="key" :value='item.key' :label="item.display_name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="时间" prop="time">
-                    <el-date-picker v-model="form.display_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
+                    <el-date-picker v-model="form.display_time" type="datetime"  style="width:300px" placeholder="选择日期时间"></el-date-picker>
                 </el-form-item>
               
                 <el-form-item label="标题" prop="title">
-                    <el-input v-model="form.title" style="width:200px;"></el-input>
+                    <el-input v-model="form.title" style="width:300px;"></el-input>
                 </el-form-item>
                 <!--
                     <el-form-item label="阅读数" prop="readed">
@@ -115,16 +121,16 @@
                     </el-form-item>
                 -->
                 <el-form-item label="状态" prop="status">
-                    <el-select style="width:200px;" placeholder="请选择" v-model="form.status">
+                    <el-select style="width:300px;" placeholder="请选择" v-model="form.status">
                         <el-option v-for="(item,key) in statusOptions" :key="key" :label="item" :value="item" ></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="重要性" prop="import">
-                    <el-rate v-model="form.forecast" :max="3" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" style="margin-top:8px;">
+                    <el-rate v-model="form.importance" :max="3" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" style="margin-top:8px;">
                     
                     </el-rate>
                 </el-form-item>
-                <el-form-item label="点评">
+                <el-form-item label="点评" prop="words">
                     <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="form.remark" style="width:300px;">
                     </el-input>
                 </el-form-item>
@@ -151,7 +157,7 @@ const calendarTypeOptions = [
   { key: 'EU', display_name: '欧元区' }
 ]
 
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {//整理成类似-----------'CN':'中国'---------的形式
+const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => { //整理成类似-----------'CN':'中国'---------的形式
   acc[cur.key] = cur.display_name
   return acc
 }, {}) 
@@ -159,13 +165,14 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {//整理�
 export default{
     data(){
         return{
+
             tabelkey:0,
             checkperson:false,
             list:[],
             searchVal:"",
             total:null,
             sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
-            listLoading:true,
+            listLoading:false,
             selectOption:[1,2,3],
             calendarTypeOptions,
             selectType:
@@ -200,28 +207,30 @@ export default{
                 sort: '+id'
             },
             dialogformvisible:false,
+            // dialogwidth:'500px',
             titlemap:{
                 creat:'创建',
                 update:'更新'
             },
             titlekey:'',
             form:{
-                type:'',
-                display_time:new Date().toLocaleString(),
+                type:undefined,
+                display_time:undefined,
                 title:'',
-                status:'publish',
-                forecast:1,
+                status:undefined,
+                importance:undefined,
                 pageviews:'',
                 remark:'',
-                edit:false
+                edit:false,
+                words:''
             },
             statusOptions: ['published', 'draft', 'deleted'],
             rule:{
-                type:[{required:true,message:'this is required',trigger:'change'}],
+                type:[{required:true,message:'type is required',trigger:'change'}],
                 // time:[{type:'date',required:true,message:'this is required',trigger:'change'}],
                 // time:[{type:'date',required:true,message:'time is required',trigger:'change'}],
-                title:[{required:true,message:'this is required',trigger:'blur'}],
-                status:[{required:true,message:'this is required',trigger:'change'}]
+                title:[{required:true,message:'title is required',trigger:'blur'}],
+                status:[{required:true,message:'status is required',trigger:'change'}]
             }
 
         }
@@ -277,12 +286,34 @@ export default{
         },
         handleupdate(row){
             this.form = Object.assign({},row);
+            
             this.form.display_time = new Date(this.form.display_time);
             this.titlekey = "update";
             this.dialogformvisible = true;
-    //         this.$nextTick(() => {
-    //         // this.$refs['form'].clearValidate()
-    //   })
+          
+        },
+        updateData(){ //更新的确定按钮
+
+            this.$refs['forms'].validate((valid)=>{
+                if(valid){
+
+                    let tempDate = Object.assign({},this.form);
+                   
+                    tempDate.display_time = new Date().toLocaleString().replace(/\//g,"-").replace(/下午/g,'').replace(/上午/g,'');
+                    for(const items of this.list){
+                        if(items.id == tempDate.id){
+                            let index = this.list.indexOf(items);
+                            this.list.splice(index,1,tempDate)
+                            break;
+                        }
+                    }
+                    this.form.originTitle = this.form.title;
+                    this.dialogformvisible = false
+                }
+            })
+              this.$nextTick(() => {
+                //  this.$refs['forms'].resetFields();
+            })
         },
         delrow(row){
             // console.log(row.id,Object.prototype.toString.call(row.id))
@@ -292,37 +323,25 @@ export default{
                     this.list.splice(i,1)
                 }
             }
+            this.total--;
         },
         createData(){
-            this.$refs['form'].validate((valida)=>{
+            this.$refs['forms'].validate((valida)=>{
                 if(valida){
                     this.form.id = parseInt(Math.random() * 100) + 1024 // mock a id
                     this.form.author = '原创作者';
                     
+                    this.form.originTitle = this.form.title;
                     this.list.unshift(this.form);
                     this.dialogformvisible = false
+                    this.total++;
+
                     this.$notify({
                         title: '成功',
                         message: '创建成功',
                         type: 'success',
                         duration: 2000
                     })
-                }
-            })
-        },
-        updateData(){
-            this.$refs['form'].validate((valid)=>{
-                if(valid){
-                    let tempDate = Object.assign({},this.temp);
-                    tempDate.display_time = new Date().toLocaleString();
-                    for(const items of this.list){
-                        if(items.id == tempDate.id){
-                            let index = this.list.indexOf(items);
-                            this.list.splice(index,1,this.form)
-                            break;
-                        }
-                    }
-                    this.dialogformvisible = false
                 }
             })
         },
@@ -333,9 +352,10 @@ export default{
         ,handleSizeChange(val){
             this.listquery.limit = val;
             this.getList();
-        }
-      ,getList(){
+        },
+        getList(){
           this.listLoading = true;
+          
            fetchList(this.listquery).then(res => {
                
                this.list = res.data.items;
@@ -353,7 +373,8 @@ export default{
           row.title = row.originTitle
           this.$message({
               message:"您已取消编辑！",
-              type:"warning"
+              type:"warning",
+              duration:1000
           });
       },
       confirmEdit(row){
@@ -361,32 +382,30 @@ export default{
           row.edit = false;
           this.$message({
               message:"编辑成功！",
-              type:"success"
+              type:"success",
+              duration:1000
           })
       },
       creattable(){
+           this.dialogformvisible = true;
+           this.titlekey = 'create'
+           this.form.display_time = new Date().toLocaleString().replace(/\//g,'-').replace(/上午/g,'').replace(/下午/g,'');
 
-           this.form={
-                type:undefined,
-                display_time:new Date().toLocaleString(),
-                title:'',
-                status:'publish',
-                forecast:1,
-                pageviews:'',
-                remark:'',
-                edit:false
-          }
-          this.dialogformvisible = true;
-          this.titlekey = 'create'
+           this.$nextTick(() => {//执行清空form表单的事件
+           this.$refs.forms.resetFields();
+        })
+        
       }  
     }
 }
 </script>
 <style>
-   
+    .el-loading-mask{
+        background:rgba(0,0,0,.8)!important;
+    }
     .cancel-btn{
        float:right;
-       
+      
     }
     #edit-input{
         float:left;

@@ -4,7 +4,7 @@
     <div class="content">
       <div class="main_content">
        <el-row>
-          <el-col :span="24"><div class="grid-content">dddddddddddd</div></el-col>
+          <el-col :span="24"><div class="grid-content"></div></el-col>
        </el-row>
        <el-row>
           <el-col :span="12"><div class="grid-content"></div></el-col>
